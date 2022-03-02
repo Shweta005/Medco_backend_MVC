@@ -1,11 +1,11 @@
-﻿using Medco_backend.Models;
+﻿
+using Medco_backend.Helper;
+using Medco_backend.Models;
 using MedcoDBcontext;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+
+
 
 namespace Medco_backend.Controllers
 {
@@ -14,7 +14,7 @@ namespace Medco_backend.Controllers
     public class LoginController : ControllerBase
     {
         private readonly MedcoDBContext _context;
-
+        
         public LoginController(MedcoDBContext context)
         {
             _context = context;
@@ -36,6 +36,8 @@ namespace Medco_backend.Controllers
             }
             else
             {
+                //string passwordHash = BCrypt.Net.BCrypt.HashPassword(userObj.Password);
+                //userObj.Password = EncDscPassword.EncryptPassword(userObj.Password);
                 _context.Users.Add(userObj);
                 _context.SaveChanges();
                 return Ok(new
@@ -47,6 +49,9 @@ namespace Medco_backend.Controllers
 
 
         }
+
+       
+
         [HttpPost("login")] 
         public IActionResult Login([FromBody] User userObj)
         {
@@ -56,20 +61,32 @@ namespace Medco_backend.Controllers
             }
             else
             {
+
+                //var user = _context.Users.Where(a => a.Email == userObj.Email).FirstOrDefault();
+
                 var email = userObj.Email;
-                var userDetails = _context.Users.Where(x => x.Email == email);
-                var user = _context.Users.Where(a =>
-                a.Email == userObj.Email
-                && a.Password == userObj.Password).FirstOrDefault();
-                if (user != null)
+                var pass = userObj.Password;
+                //string Hash = BCrypt.Net.BCrypt.HashPassword(pass);
+                //var user = _context.Users.Where(x => x.Email == email && x.Password == Hash).FirstOrDefault();
+                //var userDetails = _context.Users.Where(x => x.Email == email);
+                var user = _context.Users.Where(x => x.Email == email && x.Password == pass).FirstOrDefault();
+                //var details = _context.Users.Where(User =>
+                //User.Email == email
+                //&& EncDscPassword.DecryptPassword(User.Password) == pass).FirstOrDefault();
+
+                //a.Password == userObj.Password).FirstOrDefault();
+               
+                if (user!=null)
                 {
-                    return Ok(userDetails);
+                    
+                    return Ok(user);
                 }
 
                 else
                 {
                     return NotFound(new
                     {
+                       
                         Statuscode = 404,
                         Message = "User not found"
                     });

@@ -31,7 +31,7 @@ namespace Medco_backend.Controllers
       
 
         // GET: api/Products/5
-        [HttpGet("getbyid/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
@@ -44,19 +44,19 @@ namespace Medco_backend.Controllers
             return product;
         }
 
-        // GET: api/Products/5
-        [HttpGet("{catname}")]
-        public async Task<ActionResult<Product>> GetProductByName(string catname)
+        // GET: api/Products/Category/1
+        [HttpGet("Category/{id}")]
+        public async Task<ActionResult<Product>> GetByCategory(int id)
         {
-            var product = await _context.Products.FindAsync(catname);
-
-            if (product == null)
+            var Details = _context.Products.Where(x => x.Catid == id).AsQueryable();
+            if (Details == null)
             {
                 return NotFound();
             }
-
-            return product;
+            return Ok(Details);
         }
+
+
 
 
         // PUT: api/Products/5

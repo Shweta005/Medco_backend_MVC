@@ -42,6 +42,47 @@ namespace Medco_backend.Controllers
             return coupen;
         }
 
+         // GET: api/Coupens/Coupen/BALM50
+        [HttpGet("Coupen/{code}")]
+        public async Task<ActionResult<Product>> GetByCoupenCode(string code)
+        {
+            var coupon = _context.Coupens.Where(x => x.Coupencode == code).AsQueryable();
+            if (coupon == null)
+            {
+                return NotFound();
+            }
+            return Ok(coupon);
+        }
+
+        [HttpPost("Redeem")]
+        public IActionResult Redeem([FromBody] Coupen codeObj)
+        {
+            if (codeObj == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                var code = codeObj.Coupencode;
+                var couponDetails = _context.Coupens.Where(x => x.Coupencode == code);
+                var coupen = _context.Coupens.Where(a =>
+                a.Coupencode == code).FirstOrDefault();
+                if (coupen != null)
+                {
+                    return Ok(couponDetails);
+                }
+
+                else
+                {
+                    return NotFound(new
+                    {
+                        Statuscode = 404,
+                        Message = "Coupon not found"
+                    });
+                }
+            }
+        }
+
         // PUT: api/Coupens/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
